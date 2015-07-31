@@ -1,19 +1,19 @@
 IFRAMEr makes your components portable and your life easier.
 
-If you look for a simple approach which helps creating reusable web components - IFRAMEr might be exactly what you need. This is a small JavaScript function that wraps your `html` markup with all `styles` and `scripts` you need for its work - into dynamically ccreated `iframe` element, so page can't suddenly break the original design of your component.
+If you look for a simple approach which helps creating reusable web components - IFRAMEr might be exactly what you need. This is a small JavaScript function that wraps your `html` markup with all `styles` and `scripts` you need for its work - into dynamically created `iframe` element, so page can't suddenly break the original design of your component.
+
+## Overview 
+![IFRAMEr solved my problem](http://content.screencast.com/users/vmysla/folders/Default/media/f71f289a-fce4-444b-856a-86b8f3c7cce4/iframer.png)
+
+Enjoy with the demo on JsFiddle first: http://jsfiddle.net/vmysla/7rhgoeuq/1/
 
 Total size for minified version of the script is 495 bytes gzipped (798 bytes uncompressed).
-IFRAMEr has no dependencies, but it has support for custom tasks you can add. 
 
-## Demo
-
-Enjoy with the the demo on JsFiddle first: http://jsfiddle.net/vmysla/7rhgoeuq/1/
-
-![IFRAMEr solved my problem](http://content.screencast.com/users/vmysla/folders/Default/media/f71f289a-fce4-444b-856a-86b8f3c7cce4/iframer.png)
+IFRAMEr has no dependencies. You can extend and customize it by adding own tasks. 
 
 Feel free to fork: `git clone https://github.com/vmysla/IFRAMEr`
 
-## Get started 
+## Get started
 
 Widget is any web component which is wrapped into IFRAME for its wide distribution in the web. 
 You can create widgets from any frontend element you have on the page:
