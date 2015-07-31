@@ -1,0 +1,24 @@
+{
+  "name": "iframer",
+  "version": "1.0.0",
+  "description": "IFRAMEr makes your web components portable and your life easier",
+  "main": "./dist/iframer.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vmysla/IFRAMEr.git"
+  },
+  "keywords": [
+    "iframe",
+    "widget",
+    "frontend",
+    "portable",
+    "wrapper",
+    "cross-platform"
+  ],
+  "author": "Vlad Mysla",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vmysla/IFRAMEr/issues"
+  },
+  "homepage": "https://github.com/vmysla/IFRAMEr#readme"
+}
