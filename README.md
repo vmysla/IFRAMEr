@@ -4,11 +4,11 @@ If you look for a simple approach which helps creating reusable web components -
 
 ## Overview 
 
-Enjoy with the demo on JsFiddle first: http://jsfiddle.net/vmysla/7rhgoeuq/1/
+Enjoy with the demo on JsFiddle first: https://jsfiddle.net/vmysla/7rhgoeuq/3/embedded/result/
 
 ![IFRAMEr solved my problem](http://content.screencast.com/users/vmysla/folders/Default/media/f71f289a-fce4-444b-856a-86b8f3c7cce4/iframer.png)
 
-Demo: http://jsfiddle.net/vmysla/7rhgoeuq/1/
+Demo: https://jsfiddle.net/vmysla/7rhgoeuq/3/embedded/result/
 
 IFRAMEr has no dependencies. 
 Total size for minified version of the script is 495 bytes gzipped (798 bytes uncompressed). 
