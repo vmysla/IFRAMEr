@@ -67,6 +67,10 @@
         if(gaTracker) gaTracker.apply(window, arguments);
       }; 
       
+    },
+
+    shareContainer : function shareContainerTask(iframe, iwindow, idocument){
+      iwindow['container'] = iframe;
     }
 
   });
