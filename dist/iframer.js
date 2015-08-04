@@ -1,4 +1,3 @@
-
   /// @example http://jsfiddle.net/vmysla/7rhgoeuq/
   (function initWidgets( tasks ){
     
@@ -14,8 +13,8 @@
           var next    = script.nextElementSibling || script.nextSibling;
 
           var iframe  = document.createElement( 'iframe' );
-          var iscript = (next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '</'+'script>') : '';
-          var ihtml   = script.innerHTML.replace(/(<script.*)(\/>)/ig,'$1></script>') + iscript;
+          var iscript = (next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '<'+'/script>') : '';
+          var ihtml   = script.innerHTML.replace(/(<script.*)(\/>)/ig,'$1><'+'/script>') + iscript;
 
           iframe.width  = '0';  
           iframe.height = '0';
@@ -25,25 +24,39 @@
           parent.removeChild( script );
           if(iscript) parent.removeChild( next );
 
-          var iwindow   = iframe.contentWindow;
-          var idocument = iframe.contentDocument || iwindow.document;
+          var iwindow, idocument, accessible;
 
-          idocument.open();
+          function access(iframe){
+            iwindow = iframe.contentWindow;
+            idocument = iframe.contentDocument || (iwindow && iwindow.document);
+            return (accessible = iwindow && idocument);
+          };
 
-          for( var taskName in tasks ){  
-              try {
-                  tasks[taskName]( iframe, iwindow, idocument );
-              } catch( error ) {
-                  if( window.console && console.log ) {
-                      console.log( 'IFRAMEr task exception', taskName, script.name, error.message );
+          iframe.init = function(iframe){
+                
+                access(iframe);
+              
+              for( var taskName in tasks ){  
+                  try {
+                      tasks[taskName]( iframe, iwindow, idocument );
+                  } catch( error ) {
+                      if( window.console && console.log ) {
+                          console.log( 'IFRAMEr task exception', taskName, script.name, error.message );
+                      }
                   }
               }
+
+              idocument.write( ihtml );
+              idocument.close();
+          };
+
+          if(access(iframe) == false) {
+              iframe.src = 'javascript:(document.open().domain="'+document.domain+'") && frameElement.init(frameElement)';
+          } else {
+              iframe.init(iframe);
           }
           
-          idocument.write( ihtml );
-          idocument.close();       
         }
-
     }
 
   })({
@@ -58,9 +71,7 @@
     shareGoogleAnalytics : function shareGoogleAnalyticsTask(iframe, iwindow, idocument){
     
       var gaDefaultName = 'ga';
-      var gaTrackerName = window['GoogleAnalyticsObject'] || gaDefaultName;
-      var gaTracker = window[gaTrackerName];
-
+ 
       iwindow[gaDefaultName] = function(){
         var gaTrackerName = window['GoogleAnalyticsObject'] || gaDefaultName;
         var gaTracker = window[gaTrackerName];
