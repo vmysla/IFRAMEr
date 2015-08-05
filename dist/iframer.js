@@ -14,11 +14,12 @@
 
           var iframe  = document.createElement( 'iframe' );
           var iscript = (next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '<'+'/script>') : '';
-          var ihtml   = script.innerHTML.replace(/(<script.*)(\/>)/ig,'$1><'+'/script>') + iscript;
+          var ihtml   = script.innerHTML.replace(/(<script.*)(\/>)/ig,'$1><'+'/script>');       
 
-          iframe.width  = '0';  
-          iframe.height = '0';
-          iframe.frameborder = '0';
+          iframe.width  = 0;  
+          iframe.height = 0;
+          iframe.className  = 'widget';
+          iframe.id  = script.id || ('widget-' + Math.random() );
 
           parent.insertBefore( iframe, script );
           parent.removeChild( script );
@@ -34,7 +35,12 @@
 
           iframe.init = function(iframe){
                 
-                access(iframe);
+              access(iframe);
+
+             // idocument.write( ihtml );
+             // idocument.write('<style> body{ overflow : hidden; } </style>');
+             idocument.write( ihtml + iscript + '<style> body{ overflow : hidden; } </style>' );
+             idocument.close();
               
               for( var taskName in tasks ){  
                   try {
@@ -46,8 +52,13 @@
                   }
               }
 
-              idocument.write( ihtml );
-              idocument.close();
+              
+              //idocument.write( iscript );
+              
+              //idocument.body.className = 'ready';
+              //idocument.contentDocument = idocument;
+              //idocument.contentWindow = iwindow;
+              //idocument.contentDocument = idocument;
           };
 
           if(access(iframe) == false) {
@@ -62,10 +73,20 @@
   })({
 
     adjustForContainer : function adjustForContainerTask(iframe, iwindow, idocument){
-      iframe.style['background'] = 'transparent';
-      iframe.style['border']     = 'none';
+      //idocument.write('<style> body{ overflow : hidden; } </style>');
       iframe.style['height']     = '100%';
       iframe.style['width']      = '100%';
+	  iframe.tabIndex = 0;
+      iframe.frameborder = 0;
+      iframe.marginHeight = 0;
+      iframe.marginWidth = 0;
+      iframe.scrolling = 'no';
+      iframe.style['border'] = 'none';
+      iframe.style['overflow'] = 'hidden';
+      iframe.setAttribute('hspace', 0);
+      iframe.setAttribute('vspace', 0);
+      iframe.setAttribute('allowtransparency', 'false');
+      iframe.setAttribute('aria-hidden', 'true');      
     },
     
     shareGoogleAnalytics : function shareGoogleAnalyticsTask(iframe, iwindow, idocument){
