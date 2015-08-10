@@ -1,6 +1,6 @@
   /// @example http://jsfiddle.net/vmysla/7rhgoeuq/
   (function initWidgets( tasks ){
-    
+
     var scripts = document.getElementsByTagName( 'script' );
 
     for( var i=0; i<scripts.length; i++){
@@ -14,7 +14,7 @@
 
           var iframe  = document.createElement( 'iframe' );
           var iscript = (next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '<'+'/script>') : '';
-          var ihtml   = script.innerHTML.replace(/(<script.*)(\/>)/ig,'$1><'+'/script>');       
+          var ihtml   = script.innerHTML.replace(/xscript/ig,'script');
 
           iframe.width  = 0;  
           iframe.height = 0;
@@ -28,20 +28,23 @@
           var iwindow, idocument, accessible;
 
           function access(iframe){
-            iwindow = iframe.contentWindow;
-            idocument = iframe.contentDocument || (iwindow && iwindow.document);
-            return (accessible = iwindow && idocument);
+            try {
+              iwindow = iframe.contentWindow;
+              idocument = iframe.contentDocument || (iwindow && iwindow.document);
+              return (accessible = iwindow && idocument);              
+            } catch(e) {
+              return false;
+            }
           };
 
           iframe.init = function(iframe){
                 
               access(iframe);
+             
+              idocument.write(ihtml);
+              iframe.frameElement = iframe;
+              iframe.$top = $(window);
 
-             // idocument.write( ihtml );
-             // idocument.write('<style> body{ overflow : hidden; } </style>');
-             idocument.write( ihtml + iscript + '<style> body{ overflow : hidden; } </style>' );
-             idocument.close();
-              
               for( var taskName in tasks ){  
                   try {
                       tasks[taskName]( iframe, iwindow, idocument );
@@ -51,14 +54,10 @@
                       }
                   }
               }
+              
+              idocument.write(iscript); 
+              idocument.close();
 
-              
-              //idocument.write( iscript );
-              
-              //idocument.body.className = 'ready';
-              //idocument.contentDocument = idocument;
-              //idocument.contentWindow = iwindow;
-              //idocument.contentDocument = idocument;
           };
 
           if(access(iframe) == false) {
@@ -66,43 +65,38 @@
           } else {
               iframe.init(iframe);
           }
-          
+
         }
     }
 
-  })({
+    })({
 
     adjustForContainer : function adjustForContainerTask(iframe, iwindow, idocument){
-      //idocument.write('<style> body{ overflow : hidden; } </style>');
-      iframe.style['height']     = '100%';
-      iframe.style['width']      = '100%';
-	  iframe.tabIndex = 0;
-      iframe.frameborder = 0;
-      iframe.marginHeight = 0;
-      iframe.marginWidth = 0;
+      iframe.tabIndex = 0;
+      iframe.frameBorder = 0;
+      iframe.marginheight = 0;
+      iframe.marginwidth = 0;
       iframe.scrolling = 'no';
-      iframe.style['border'] = 'none';
+      iframe.style['border'] = '0px none transparent';
       iframe.style['overflow'] = 'hidden';
+      iframe.style['height'] = '100%';
+      iframe.style['width'] = '100%';
+      iframe.style['background'] = 'transparent';
       iframe.setAttribute('hspace', 0);
       iframe.setAttribute('vspace', 0);
       iframe.setAttribute('allowtransparency', 'false');
-      iframe.setAttribute('aria-hidden', 'true');      
+      iframe.setAttribute('aria-hidden', 'true');
     },
-    
+
     shareGoogleAnalytics : function shareGoogleAnalyticsTask(iframe, iwindow, idocument){
-    
+
       var gaDefaultName = 'ga';
- 
+
       iwindow[gaDefaultName] = function(){
         var gaTrackerName = window['GoogleAnalyticsObject'] || gaDefaultName;
         var gaTracker = window[gaTrackerName];
         if(gaTracker) gaTracker.apply(window, arguments);
       }; 
       
-    },
-
-    shareContainer : function shareContainerTask(iframe, iwindow, idocument){
-      iwindow['container'] = iframe;
     }
-
-  });
+});
