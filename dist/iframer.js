@@ -13,8 +13,8 @@
           var next    = script.nextElementSibling || script.nextSibling;
 
           var iframe  = document.createElement( 'iframe' );
-          var iscript = (next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '<'+'/script>') : '';
-          var ihtml   = script.innerHTML.replace(/xscript/ig,'script');
+          var iscript = (next && next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '<'+'/script>') : '';
+          var ihtml   = script.innerHTML.replace(/ref-script/ig,'script');
 
           iframe.width  = 0;  
           iframe.height = 0;
@@ -43,7 +43,6 @@
              
               idocument.write(ihtml);
               iframe.frameElement = iframe;
-              iframe.$top = $(window);
 
               for( var taskName in tasks ){  
                   try {
@@ -72,20 +71,19 @@
     })({
 
     adjustForContainer : function adjustForContainerTask(iframe, iwindow, idocument){
-      iframe.tabIndex = 0;
-      iframe.frameBorder = 0;
-      iframe.marginheight = 0;
-      iframe.marginwidth = 0;
-      iframe.scrolling = 'no';
-      iframe.style['border'] = '0px none transparent';
-      iframe.style['overflow'] = 'hidden';
-      iframe.style['height'] = '100%';
-      iframe.style['width'] = '100%';
-      iframe.style['background'] = 'transparent';
-      iframe.setAttribute('hspace', 0);
-      iframe.setAttribute('vspace', 0);
+
+      var attrs = ('tabIndex frameBorder marginheight marginwidth hspace vspace').split(' '), attr;
+
+      while(attr = attrs.pop()){ 
+      	iframe.setAttribute(attr, '0');
+      }
+
+      iframe.setAttribute('scrolling', 'no');
       iframe.setAttribute('allowtransparency', 'false');
       iframe.setAttribute('aria-hidden', 'true');
+      iframe.setAttribute('height', '100%');
+      iframe.setAttribute('width', '100%');
+	  iframe.style = 'background: transparent; border: 0px none transparent; height: 100%; width: 100%; overflow: hidden';      
     },
 
     shareGoogleAnalytics : function shareGoogleAnalyticsTask(iframe, iwindow, idocument){
