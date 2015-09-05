@@ -1,100 +1,101 @@
-  /// @example http://jsfiddle.net/vmysla/7rhgoeuq/
-  (function initWidgets( tasks ){
 
-    var scripts = document.getElementsByTagName( 'script' );
+// frameless document.querySelectorAll: 
+// https://gist.github.com/vmysla/ed1daad8109ea1ba811e
 
-    for( var i=0; i<scripts.length; i++){
-        
-        var script = scripts[i];
+// frameless jQuery: 
+// https://gist.github.com/vmysla/00806f5c98b51857ee36
 
-        if( script.type == 'widget/html' ) {
 
-          var parent  = script.parentNode || document;
-          var next    = script.nextElementSibling || script.nextSibling;
+var outside = (typeof module == 'undefined' || !module.exports) 
+	  ? (typeof window != 'undefined' && window || this)
+	  : module.exports;
 
-          var iframe  = document.createElement( 'iframe' );
-          var iscript = (next && next.type == 'widget/javascript') ? ('<script>' + next.innerHTML + '<'+'/script>') : '';
-          var ihtml   = script.innerHTML.replace(/ref-script/ig,'script');
+outside.iframer = iframer;
 
-          iframe.width  = 0;  
-          iframe.height = 0;
-          iframe.className  = 'widget';
-          iframe.id  = script.id || ('widget-' + Math.random() );
 
-          parent.insertBefore( iframe, script );
-          parent.removeChild( script );
-          if(iscript) parent.removeChild( next );
+/*
+    // ------------ Usage: -------------
+    // =================================
+    
+    var container = document.querySelector('body');
+    var html      = "<h1>Timestamp <script>document.write( Date.now() );</script></h1>";
 
-          var iwindow, idocument, accessible;
-
-          function access(iframe){
-            try {
-              iwindow = iframe.contentWindow;
-              idocument = iframe.contentDocument || (iwindow && iwindow.document);
-              return (accessible = iwindow && idocument);              
-            } catch(e) {
-              return false;
-            }
-          };
-
-          iframe.init = function(iframe){
-                
-              access(iframe);
-             
-              idocument.write(ihtml);
-              iframe.frameElement = iframe;
-
-              for( var taskName in tasks ){  
-                  try {
-                      tasks[taskName]( iframe, iwindow, idocument );
-                  } catch( error ) {
-                      if( window.console && console.log ) {
-                          console.log( 'IFRAMEr task exception', taskName, script.name, error.message );
-                      }
-                  }
-              }
-              
-              idocument.write(iscript); 
-              idocument.close();
-
-          };
-
-          if(access(iframe) == false) {
-              iframe.src = 'javascript:(document.open().domain="'+document.domain+'") && frameElement.init(frameElement)';
-          } else {
-              iframe.init(iframe);
-          }
-
-        }
+    function logFrameEvent(frame, eventName){
+        console.log(
+            "eventName"      , eventName, 
+            "frame.resolved" , frame.resolved, 
+            "document.body"  , frame.document && frame.document.body 
+        );
     }
 
-    })({
+    var listeners = {
+        'onBeforeAppend'    : logFrameEvent,
+        'onAfterAppend'     : logFrameEvent,
+        'onBeforePopulate'  : logFrameEvent,
+        'onAfterPopulate'   : logFrameEvent
+    };
 
-    adjustForContainer : function adjustForContainerTask(iframe, iwindow, idocument){
+    // --------------- API: -------------
 
-      var attrs = ('tabIndex frameBorder marginheight marginwidth hspace vspace').split(' '), attr;
+    iframer(container, html, listeners);
 
-      while(attr = attrs.pop()){ 
-      	iframe.setAttribute(attr, '0');
-      }
+    // ----------------------------------
 
-      iframe.setAttribute('scrolling', 'no');
-      iframe.setAttribute('allowtransparency', 'false');
-      iframe.setAttribute('aria-hidden', 'true');
-      iframe.setAttribute('height', '100%');
-      iframe.setAttribute('width', '100%');
-	  iframe.style = 'background: transparent; border: 0px none transparent; height: 100%; width: 100%; overflow: hidden';      
-    },
+*/
 
-    shareGoogleAnalytics : function shareGoogleAnalyticsTask(iframe, iwindow, idocument){
+function iframer(container, html,  listeners, domain){
 
-      var gaDefaultName = 'ga';
+    var frame = {
+        container : container || document.body,
+        html      : html      || '',
+        listeners : listeners || {},
+        domain    : domain    || document.domain,
 
-      iwindow[gaDefaultName] = function(){
-        var gaTrackerName = window['GoogleAnalyticsObject'] || gaDefaultName;
-        var gaTracker = window[gaTrackerName];
-        if(gaTracker) gaTracker.apply(window, arguments);
-      }; 
-      
+        element   : document.createElement('iframe'),
+        resolved  : false,
+
+        document  : false,
+        window    : false
     }
-});
+
+    iframer.append(frame);
+    iframer.resolve(frame) 
+        ? iframer.populate(frame) 
+        : iframer.populate(frame, document.domain);
+}
+
+iframer.append = function (frame){
+    iframer.trigger(frame, 'onBeforeAppend');
+    frame.container.appendChild( frame.element );
+    iframer.trigger(frame, 'onAfterAppend');
+}
+
+iframer.populate = function (frame, domain) {
+    if(domain){
+        frame.element.populate = iframer.populate;
+        frame.element.src = 'javascript:(document.open().domain="'+domain+'") && frameElement.populate(frameElement)';
+    }
+    else {
+        iframer.resolve(frame);
+        iframer.trigger(frame, 'onBeforePopulate');
+        frame.element.frameElement = frame.element;
+        frame.document.write(frame.html);
+        frame.document.close();
+        iframer.trigger(frame, 'onAfterPopulate');
+    }
+}
+
+iframer.trigger = function (frame, eventName){
+    var handler = frame.listeners[eventName];
+    return handler && handler(frame, eventName);
+}
+
+iframer.resolve = function (frame){
+    try {
+      frame.window = frame.element.contentWindow;
+      frame.document = frame.element.contentDocument || (frame.window && frame.window.document);
+    } catch(ex) {
+      // mute
+    };
+    return frame.resolved = !!(frame.window && frame.document);
+}
