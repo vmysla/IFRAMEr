@@ -40,24 +40,24 @@ You can create widgets from any frontend element you have on the page:
 It has own HTML markup, CSS styles and JavaScript code as well.
 To make a widget - you have to put all those things into script tags with special type attributes: 
 
-####1. Wrap your `HTML` code with the `script[type=widget/html]` tag
+#### 1. Wrap your `HTML` code with the `script[type=widget/html]` tag
 ``` html
 	<script type="widget/html">
 		<style> 
 			b { color : red; } 
 		</style>
 		<div>
-	    	Hi! <br/> I'm simple <b id="term">web component</b>!
+	    	Hi! <br/> I`m simple <b id="term">web component</b>!
 	    </div>
 	</script>
 ```
-####2. Put your `JavaScript` code for widget into `script[widget/javascript]`, right after 1.
+#### 2. Put your `JavaScript` code for widget into `script[widget/javascript]`, right after 1.
 ``` html
 	<script type="widget/javascript">
 	    document.getElementById('term').innerHTML = 'iframe widget';
 	</script>
 ```
-####3. Add `IFRAMEr` script just before closing `body` tag
+#### 3. Add `IFRAMEr` script just before closing `body` tag
 ``` html
      ...
      <script src="//rawgit.com/vmysla/IFRAMEr/master/dist/iframer.min.js"></script>
